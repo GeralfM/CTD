@@ -4,49 +4,48 @@ using UnityEngine;
 
 public class Grid : MonoBehaviour {
 
-    public Dictionary<Coord, Cell> playerCells = new Dictionary<Coord, Cell>();
-    public Dictionary<Coord, Cell> ennemyCells = new Dictionary<Coord, Cell>();
+    public Dictionary<Coord, Cell> allCells;
     public GameObject cellPrefab;
 
 	// Use this for initialization
 	void Start () {
+        
+    }
 
+    public void Initialize()
+    {
+        allCells = new Dictionary<Coord, Cell>();
+        
         // Creation du quadrillage principal
-        for (int i = 0; i < 5; i++)
-            for (int j = 0; j < 5; j++)
+        for (int i = 0; i <= 6; i++)
+            for (int j = 0; j <= 6; j++)
             {
                 GameObject newCell = Instantiate(cellPrefab, gameObject.transform);
 
-                newCell.GetComponent<RectTransform>().anchorMin = new Vector2(1.5f / 8 + 1 / 8f * i, 1.5f / 8 + 1 / 8f * j);
-                newCell.GetComponent<RectTransform>().anchorMax = new Vector2(2.5f / 8 + 1 / 8f * i, 2.5f / 8 + 1 / 8f * j);
+                float x = (1f / 4 + (i > 0 ? 1f / 4 : 0) + (i == 6 ? 1f / 4 : 0) + i) / 8;
+                float y = (1f / 4 + (j > 0 ? 1f / 4 : 0) + (j == 6 ? 1f / 4 : 0) + j) / 8;
+
+                newCell.GetComponent<RectTransform>().anchorMin = new Vector2(x, y);
+                newCell.GetComponent<RectTransform>().anchorMax = new Vector2(x + 1f / 8, y + 1f / 8);
                 newCell.GetComponent<RectTransform>().localScale = Vector3.one;
 
-                newCell.GetComponent<Cell>().Initialize(true);
+                allCells.Add(new Coord(i, j), newCell.GetComponent<Cell>());
             }
-        for (int i = 0; i < 2; i++)
-            for (int j = 0; j < 5; j++)
-            {
-                GameObject newCell = Instantiate(cellPrefab, gameObject.transform);
 
-                newCell.GetComponent<RectTransform>().anchorMin = new Vector2(0.25f / 8 + 6.5f / 8 * i, 1.5f / 8 + 1 / 8f * j);
-                newCell.GetComponent<RectTransform>().anchorMax = new Vector2(1.25f / 8 + 6.5f / 8 * i, 2.5f / 8 + 1 / 8f * j);
-                newCell.GetComponent<RectTransform>().localScale = Vector3.one;
+        foreach (Coord toRemove in new List<Coord>() { new Coord(0, 0), new Coord(0, 6), new Coord(6, 0), new Coord(6, 6) })
+        {
+            Cell byebye = allCells[toRemove];
+            allCells.Remove(toRemove);
+            Destroy(byebye.gameObject);
+        }
 
-                newCell.GetComponent<Cell>().Initialize(false);
-
-                GameObject newCell2 = Instantiate(cellPrefab, gameObject.transform);
-
-                newCell2.GetComponent<RectTransform>().anchorMin = new Vector2(1.5f / 8 + 1 / 8f * j, 0.25f / 8 + 6.5f / 8 * i);
-                newCell2.GetComponent<RectTransform>().anchorMax = new Vector2(2.5f / 8 + 1 / 8f * j, 1.25f / 8 + 6.5f / 8 * i);
-                newCell2.GetComponent<RectTransform>().localScale = Vector3.one;
-
-                newCell2.GetComponent<Cell>().Initialize(false);
-            }
+        foreach (Coord aCoord in allCells.Keys)
+            allCells[aCoord].Initialize(aCoord.x > 0 && aCoord.x < 6 && aCoord.y > 0 && aCoord.y < 6 ? true : false);
 
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update () {
 		
 	}
 }
