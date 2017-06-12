@@ -28,6 +28,7 @@ public class Grid : MonoBehaviour {
                 newCell.GetComponent<RectTransform>().anchorMin = new Vector2(x, y);
                 newCell.GetComponent<RectTransform>().anchorMax = new Vector2(x + 1f / 8, y + 1f / 8);
                 newCell.GetComponent<RectTransform>().localScale = Vector3.one;
+                newCell.GetComponent<Cell>().myCoords = new Coord(i, j);
 
                 allCells.Add(new Coord(i, j), newCell.GetComponent<Cell>());
             }

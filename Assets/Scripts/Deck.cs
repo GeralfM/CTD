@@ -6,13 +6,16 @@ public class Deck : MonoBehaviour {
 
     public List<GameObject> myDeck = new List<GameObject>();
     public List<GameObject> myHand = new List<GameObject>();
+    public Reader myReader { get; set; }
     public GameObject cardPrefab;
 
     public GameObject selection { get; set; }
 
     // Use this for initialization
     void Start() {
-        
+
+        myReader = GameObject.Find("MainHandler").GetComponent<Reader>();
+
         SetDeck();
         Shuffle();
         Draw();
@@ -51,6 +54,9 @@ public class Deck : MonoBehaviour {
             GameObject newCard = Instantiate(cardPrefab, gameObject.transform);
             myDeck.Add(newCard);
             newCard.GetComponent<Card>().myDeck = this;
+            newCard.GetComponent<Card>().myName = "Spark watchtower";
+            newCard.GetComponent<Card>().myDescription = myReader.myDescr[newCard.GetComponent<Card>().myName];
+            newCard.GetComponent<Card>().SetVisualInfos();
 
             newCard.SetActive(false);
         }
@@ -62,7 +68,7 @@ public class Deck : MonoBehaviour {
             myHand[i].GetComponent<RectTransform>().anchorMin = new Vector2(0.1f, 0.05f + 0.25f * i);
             myHand[i].GetComponent<RectTransform>().anchorMax = new Vector2(0.9f, 0.25f + 0.25f * i);
         }
-        while (myHand.Count < 3)
+        while (myHand.Count < 3 && myDeck.Count>0)
         {
             GameObject drewCard = myDeck[0];
             drewCard.SetActive(true);

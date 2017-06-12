@@ -8,6 +8,10 @@ public class Cell : MonoBehaviour {
     public bool initiallyPlayer;
     public bool fallen;
 
+    public Coord myCoords { get; set; }
+
+    public Zyx_Object occupant { get; set; }
+
     public bool available = true;
     public int PVMax;
     public int PV;
@@ -28,6 +32,8 @@ public class Cell : MonoBehaviour {
     public void setFallen(bool isFallen)
     {
         fallen = isFallen;
+        if (fallen && !available && occupant.friendly)
+            occupant.IsDestroyed();
         gameObject.GetComponent<Image>().color = new Color(10f / 255, 47f / 255, 88f / 255, 1);
     }
 

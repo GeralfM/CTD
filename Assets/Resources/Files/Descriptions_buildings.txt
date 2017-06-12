@@ -1,0 +1,7 @@
+Spark watchtower
+===
+<b>Type</b> : Welder
+
+Deals 1 damage at 1 random enemy target on circle range 1. 
+<b>Support</b> : shoots 2 targets if there's at least another adjacent Welder.
+@1:1:1:circle:1:Support%1:Nbatt%1
