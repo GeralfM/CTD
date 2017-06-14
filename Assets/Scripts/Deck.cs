@@ -12,14 +12,15 @@ public class Deck : MonoBehaviour {
     public GameObject selection { get; set; }
 
     // Use this for initialization
-    void Start() {
-
+    void Awake() {
         myReader = GameObject.Find("MainHandler").GetComponent<Reader>();
+    }
 
+    public void Initialize()
+    {
         SetDeck();
         Shuffle();
         Draw();
-
     }
 
     public void Selecting(GameObject _selection)
@@ -49,12 +50,17 @@ public class Deck : MonoBehaviour {
     }
 
     public void SetDeck() {
-        for (int i = 1; i <= 15; i++)
+        CreateNewCard("Spark watchtower", 10);
+        CreateNewCard("Metal reparator", 5);
+    }
+    public void CreateNewCard(string name, int qtity)
+    {
+        for (int i = 1; i <= qtity; i++)
         {
             GameObject newCard = Instantiate(cardPrefab, gameObject.transform);
             myDeck.Add(newCard);
             newCard.GetComponent<Card>().myDeck = this;
-            newCard.GetComponent<Card>().myName = "Spark watchtower";
+            newCard.GetComponent<Card>().myName = name;
             newCard.GetComponent<Card>().myDescription = myReader.myDescr[newCard.GetComponent<Card>().myName];
             newCard.GetComponent<Card>().SetVisualInfos();
 

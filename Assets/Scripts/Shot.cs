@@ -23,6 +23,7 @@ public class Shot : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         transform.position += (target-initial)*2*Time.deltaTime;
-        if ( Mathf.Abs((transform.position-initial).x/(target-initial).x) > 1f || Mathf.Abs((transform.position - initial).y / (target - initial).y) > 1) Destroy(gameObject);
+        if ( (Mathf.Abs((transform.position-initial).x/(target-initial).x) > 1f || (initial.x == target.x)) &&
+            (Mathf.Abs((transform.position - initial).y / (target - initial).y) > 1f || (initial.y == target.y)) ) Destroy(gameObject);
     }
 }

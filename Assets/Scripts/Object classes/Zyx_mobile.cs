@@ -11,17 +11,18 @@ public class Zyx_mobile : Zyx_Object {
 
     public override void DoEndOfTurnAction()
     {
-        StartCoroutine(Attack());
+        if (!myGrid.allCells[myCoords + myOrientation].fallen)
+            StartCoroutine(Attack());
+        
+        else if (myGrid.allCells[myCoords + myOrientation].available)
+            Move();
+        
     }
     public override IEnumerator Attack()
     {
-        StartCoroutine(base.Attack());
-
-        if (!myGrid.allCells[myCoords + myOrientation].fallen)
-            myGrid.allCells[myCoords + myOrientation].addToPV(-myCaracs.ATT);
-        else if (myGrid.allCells[myCoords + myOrientation].available)
-            Move();
-        yield return new WaitForSeconds(0f);
+        foreach (Cell aCell in getZone(myCaracs.zoneAtt,myCaracs.RANGE))
+            aCell.addToPV(-myCaracs.ATT);
+        yield return StartCoroutine(base.Attack());
     }
     public void Move()
     {

@@ -6,24 +6,41 @@ using UnityEngine.UI;
 public class GameHandler : MonoBehaviour {
 
     public Grid myGrid { get; set; }
-    public Deck myDeck;
+    public Deck myDeck { get; set; }
     public Text waveText;
 
-    public int waveValue=0;
-    public int pause=2;
+    public int waveValue { get; set; }
+    public int pause { get; set; }
 
-    public List<Zyx_Object> allObjects = new List<Zyx_Object>();
+    public List<Zyx_Object> allObjects { get; set; }
     public GameObject zyxPrefab;
+
+    public GameObject gameOverScreen;
 
 	// Use this for initialization
 	void Start () {
         myGrid = GameObject.Find("Background Game").GetComponent<Grid>();
         myDeck = GameObject.Find("Background Menu").GetComponent<Deck>();
-        myGrid.Initialize();
-
-        waveText.text = "Wave : " + (waveValue==0?0:(waveValue / 5 + 1)) + "\nPause : " + pause;
+        Initialize();
     }
-	
+
+    public void Initialize()
+    {
+        foreach (Transform child in myGrid.gameObject.transform) if(child.gameObject.name=="Cell(Clone)")
+            Destroy(child.gameObject);
+        foreach (Transform child in myDeck.gameObject.transform) if (child.gameObject.name == "Carte(Clone)")
+            Destroy(child.gameObject);
+
+        allObjects = new List<Zyx_Object>();
+
+        myGrid.Initialize();
+        myDeck.Initialize();
+
+        waveValue = 0;
+        pause = 1;
+        waveText.text = "Wave : " + (waveValue == 0 ? 0 : (waveValue / 5 + 1)) + "\nPause : " + pause;
+    }
+
     public void ClickNewTurn()
     {
         StartCoroutine(DoATurn());
@@ -38,11 +55,11 @@ public class GameHandler : MonoBehaviour {
         foreach (Zyx_Object obj in allObjects)
         {
             obj.PrepareAttack();
-            attMaxDefender = obj.friendly ? Mathf.Max(attMaxDefender, obj.myCaracs.NB_ATT) : 0;
+            attMaxDefender = obj.friendly ? Mathf.Max(attMaxDefender, obj.myCaracs.NB_ATT) : attMaxDefender;
         }
 
         GoAttackers(false);
-        yield return new WaitForSeconds(attMaxDefender * 0.85f); // Passe à 0 a partir d'un certain temps... WTF ?
+        yield return new WaitForSeconds(attMaxDefender * 0.85f); // Passe à 0 a partir d'un certain temps, je crois... WTF ?
         GoAttackers(true);
         yield return new WaitForSeconds(.5f);
         NextWave();
@@ -53,12 +70,10 @@ public class GameHandler : MonoBehaviour {
     }
     public void NextWave()
     {
-        if (pause > 1)
+        if (pause >= 1)
             pause--;
         else
         {
-            if (pause == 1)
-                pause--;
             waveValue++;
 
             int toDistribute = waveValue, set, boost;
@@ -85,28 +100,38 @@ public class GameHandler : MonoBehaviour {
     }
     public void SpawnMinion(int level, int boost)
     {
-        int x = 0, y = 0, rotation;
+        int x = 0, y = 0, nbTry=0, rotation;
         do { int cellSpawn = Random.Range(1, 21);
             x = cellSpawn > 5 ? (cellSpawn < 16 ? (cellSpawn-1) % 5 +1: 6) : 0;
             y = cellSpawn > 5 && cellSpawn < 16 ? (cellSpawn < 11 ? 0 : 6) : (cellSpawn-1) % 5 + 1;
             rotation = cellSpawn > 5 ? (cellSpawn > 10 ? (cellSpawn > 15 ? 90 : 180) : 0) : 270;
-        } while (!myGrid.allCells[new Coord(x,y)].available);
-        
-        //Choisir de manière random un minion dans un pool de level approprié
+            nbTry++;
+        } while (!myGrid.allCells[new Coord(x,y)].available && nbTry<=20);
 
-        GameObject newZyx = Instantiate(Resources.Load<GameObject>("Enemies prefabs/Basic Zyx"), myGrid.allCells[new Coord(x, y)].gameObject.transform);
-        myGrid.allCells[new Coord(x, y)].available = false;
+        if (nbTry <= 20)
+        {
+            GameObject newZyx = Instantiate(Resources.Load<GameObject>("Enemies prefabs/Basic Zyx"), myGrid.allCells[new Coord(x, y)].gameObject.transform);
+            myGrid.allCells[new Coord(x, y)].available = false;
 
-        newZyx.GetComponent<RectTransform>().Rotate(new Vector3(0, 0, rotation));
-        newZyx.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
-        newZyx.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
-        newZyx.GetComponent<RectTransform>().localScale = Vector3.one;
+            newZyx.GetComponent<RectTransform>().Rotate(new Vector3(0, 0, rotation));
+            newZyx.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+            newZyx.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+            newZyx.GetComponent<RectTransform>().localScale = Vector3.one;
 
-        string unitName = "Outlaw zyx";
-        string descr = gameObject.GetComponent<Reader>().myDescrUnits[unitName][1];
+            string unitName = ChooseMinion(level);
+            string descr = gameObject.GetComponent<Reader>().myDescrUnits[unitName][1];
 
-        newZyx.GetComponent<Zyx_Object>().Initialize(unitName, descr, false, myGrid, new Coord(x, y), new Coord((rotation - 180) % 180 / 90, -(rotation - 90) % 180 / 90));
-        BuffMinion(newZyx.GetComponent<Zyx_Object>(), boost);
+            newZyx.GetComponent<Zyx_Object>().Initialize(unitName, descr, false, myGrid, new Coord(x, y), new Coord((rotation - 180) % 180 / 90, -(rotation - 90) % 180 / 90));
+            BuffMinion(newZyx.GetComponent<Zyx_Object>(), boost);
+        }
+    }
+    public string ChooseMinion(int level) // A retravailler
+    {
+        if (level == 1)
+            return "Outlaw Zyx";
+        else
+            return "Pike Zyx";
+
     }
     public void BuffMinion(Zyx_Object unit, int val)
     {
@@ -123,7 +148,18 @@ public class GameHandler : MonoBehaviour {
         int fallenAmount = 0;
         foreach (Cell aCell in myGrid.allCells.Values) if (aCell.fallen) fallenAmount++;
         if (fallenAmount >= 33)
-            print("Game Over !");
+            DisplayScreen(gameOverScreen);
+    }
+
+    //============================================== UI HANDLER =====================================================
+
+    public void DisplayScreen(GameObject screen)
+    {
+        screen.SetActive(!screen.activeSelf);
+    }
+    public void ExitGame()
+    {
+        Application.Quit();
     }
 
     // Update is called once per frame

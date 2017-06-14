@@ -42,6 +42,20 @@ public class Zyx_Object : MonoBehaviour {
     }
     public virtual void DoEndOfTurnAction()
     {
+        foreach(string action in myCaracs.actions)
+        {
+            switch (action)
+            {
+                case "Attack":
+                    StartCoroutine(Attack());
+                    break;
+                case "Heal":
+                    Heal();
+                    break;
+                default:
+                    break;
+            }
+        }
     }
     public void PrepareAttack()
     {
@@ -50,6 +64,11 @@ public class Zyx_Object : MonoBehaviour {
     public virtual IEnumerator Attack()
     {
         yield return new WaitForSeconds(0f);
+    }
+    public void Heal()
+    {
+        foreach (Cell aCell in getZone(myCaracs.zoneAtt, myCaracs.RANGE)) if (!aCell.fallen)
+                aCell.addToPV(myCaracs._ATT); // Et pas ATT qui peut varier...
     }
     public void ShootToTarget(GameObject _target)
     {
@@ -61,7 +80,7 @@ public class Zyx_Object : MonoBehaviour {
     }
     public void AddToPV(int val)
     {
-        myCaracs.PV += val;
+        myCaracs.PV = Mathf.Min(myCaracs.PV_MAX, myCaracs.PV + val);
         if (myCaracs.PV <= 0)
             IsDestroyed();
     }
@@ -83,25 +102,33 @@ public class Zyx_Object : MonoBehaviour {
                     for (int j = -range; j <= range; j++)
                         if ((i != 0 || j != 0) && myGrid.allCells.ContainsKey(myCoords + new Coord(i, j))) result.Add(myGrid.allCells[myCoords + new Coord(i, j)]);
                 break;
+            case "front":
+                for (int i = 1; i <= Mathf.Abs(range); i++)
+                    if (myGrid.allCells.ContainsKey(myCoords + (int)Mathf.Sign(range) * i * myOrientation)) result.Add(myGrid.allCells[myCoords + (int)Mathf.Sign(range) * i * myOrientation]);
+                break;
             default:
                 break;
         }
+        if (myCaracs.tempActions.Contains("Opposite") && range > 0)
+            result.AddRange(getZone(typeZone, -range));
         return result;
     }
 
     public void Build(string data)
     {
         string[] descr = data.Split(new string[] { ":" }, System.StringSplitOptions.None);
-        myCaracs.PV = System.Int32.Parse(descr[0]);
+        myCaracs.PV_MAX = System.Int32.Parse(descr[0]); myCaracs.PV = myCaracs.PV_MAX;
         myCaracs._ATT = System.Int32.Parse(descr[1]);
         myCaracs._NB_ATT = System.Int32.Parse(descr[2]);
         myCaracs.zoneAtt = descr[3];
         myCaracs._RANGE = System.Int32.Parse(descr[4]);
-        
-        if (descr[5] != "")
-            myCaracs.conditions.Add(descr[5]);
+
+        myCaracs.actions.Add(descr[5]);
+
         if (descr[6] != "")
-            myCaracs.effects.Add(descr[6]);
+            myCaracs.conditions.Add(descr[6]);
+        if (descr[7] != "")
+            myCaracs.effects.Add(descr[7]);
 
         myCaracs.restart();
     }

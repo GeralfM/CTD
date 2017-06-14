@@ -8,11 +8,7 @@ public class Zyx_building : Zyx_Object {
 	void Start () {
 		
 	}
-
-    public override void DoEndOfTurnAction()
-    {
-        StartCoroutine(Attack());
-    }
+    
     public override IEnumerator Attack()
     {
         StartCoroutine(base.Attack());

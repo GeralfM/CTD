@@ -35,7 +35,6 @@ public class Card : MonoBehaviour {
         newZyx.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
         newZyx.GetComponent<RectTransform>().localScale = Vector3.one;
         newZyx.GetComponent<Zyx_Object>().Initialize(myName, myDescription[1], true, GameObject.Find("Background Game").GetComponent<Grid>(), cible.myCoords, new Coord());
-        //DoTheThing !
         selected = !selected;
     }
     public void Cycle()
@@ -45,7 +44,7 @@ public class Card : MonoBehaviour {
     }
     public void SetVisualInfos()
     {
-        gameObject.GetComponentInChildren<Text>().text = myName + "\n\n" + myDescription[0];
+        gameObject.GetComponentInChildren<Text>().text = myName + "\n" + myDescription[0];
     }
 
 }

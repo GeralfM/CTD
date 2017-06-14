@@ -1,6 +1,13 @@
-Outlaw zyx
+Outlaw Zyx
 ===
 <b>Type</b> : Neutral
 
 Worst. Zyx. Ever.
-@1:1:1:front:1::
+@1:1:1:front:1:::
+===
+Pike Zyx
+===
+<b>Type</b> : Neutral
+
+Watch your back !
+@2:1:1:front:2:::

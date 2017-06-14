@@ -21,9 +21,9 @@ public class Reader : MonoBehaviour {
         else
         {
             string[] descr = Resources.Load<TextAsset>("Files/Descriptions_buildings").text.Split
-                (new string[] { "===\n", "@" }, System.StringSplitOptions.None);
+                (new string[] { "===", "@" }, System.StringSplitOptions.None);
             for (int k = 0; k < descr.Length; k += 3)
-                myDescr.Add(descr[k].Replace("\n", ""), new List<string>() { descr[k + 1], descr[k + 2] });
+                myDescr.Add(descr[k].Trim(), new List<string>() { descr[k + 1], descr[k + 2] });
         }
 
         if (!(Application.platform == RuntimePlatform.WindowsPlayer))
@@ -36,9 +36,9 @@ public class Reader : MonoBehaviour {
         else
         {
             string[] descr = Resources.Load<TextAsset>("Files/Descriptions_units").text.Split
-                (new string[] { "===\n", "@" }, System.StringSplitOptions.None);
+                (new string[] { "===", "@" }, System.StringSplitOptions.None);
             for (int k = 0; k < descr.Length; k += 3)
-                myDescrUnits.Add(descr[k].Replace("\n", ""), new List<string>() { descr[k + 1], descr[k + 2] });
+                myDescrUnits.Add(descr[k].Trim(), new List<string>() { descr[k + 1], descr[k + 2] });
         }
     }
 

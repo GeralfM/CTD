@@ -24,7 +24,7 @@ public class Cell : MonoBehaviour {
 
     public void addToPV(int val)
     {
-        PV += val; // dépasse PVMax pour le moment;
+        PV = Mathf.Min(PVMax, PV + val); // dépasse PVMax pour le moment;
         gameObject.GetComponent<Image>().color = new Color(1f, (float)PV / (float)PVMax, PV / PVMax, 1);
         if (PV < 0)
             setFallen(true);
@@ -49,6 +49,11 @@ public class Cell : MonoBehaviour {
     {
         if (!fallen)
             GameObject.Find("Background Menu").GetComponent<Deck>().Play(this);
+    }
+    public void isHovered(bool isOn)
+    {
+        if (!fallen)
+            GameObject.Find("MainHandler").GetComponent<CursorHandler>().showMyInfos(this, isOn);
     }
 
     // Update is called once per frame
