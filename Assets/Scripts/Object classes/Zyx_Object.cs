@@ -129,7 +129,7 @@ public class Zyx_Object : MonoBehaviour {
             myCaracs.conditions.Add(descr[6]);
         if (descr[7] != "")
             myCaracs.effects.Add(descr[7]);
-
+        
         myCaracs.restart();
     }
 

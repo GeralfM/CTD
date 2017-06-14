@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Zyx_mobile : Zyx_Object {
 
-	// Use this for initialization
+    // Use this for initialization
 	void Start () {
 		
 	}
@@ -24,7 +24,7 @@ public class Zyx_mobile : Zyx_Object {
             aCell.addToPV(-myCaracs.ATT);
         yield return StartCoroutine(base.Attack());
     }
-    public void Move()
+        public void Move()
     {
         myGrid.allCells[myCoords].available = true;
         myGrid.allCells[myCoords].occupant = null;

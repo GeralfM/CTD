@@ -15,30 +15,30 @@ public class Reader : MonoBehaviour {
         {
             string[] descr = Resources.Load<TextAsset>("Files/Descriptions_buildings").text.Split
                 (new string[] { "===" + System.Environment.NewLine, "@" }, System.StringSplitOptions.None);
-            for (int k = 0; k < descr.Length; k += 3)
-                myDescr.Add(descr[k].Replace(System.Environment.NewLine, ""), new List<string>() { descr[k + 1], descr[k + 2] });
+            for (int k = 0; k < descr.Length; k += 4)
+                myDescr.Add(descr[k].Replace(System.Environment.NewLine, ""), new List<string>() { descr[k + 2], descr[k + 3], descr[k + 1] }); // descr, infos, cost
         }
         else
         {
             string[] descr = Resources.Load<TextAsset>("Files/Descriptions_buildings").text.Split
                 (new string[] { "===", "@" }, System.StringSplitOptions.None);
-            for (int k = 0; k < descr.Length; k += 3)
-                myDescr.Add(descr[k].Trim(), new List<string>() { descr[k + 1], descr[k + 2] });
+            for (int k = 0; k < descr.Length; k += 4)
+                myDescr.Add(descr[k].Trim(), new List<string>() { descr[k + 2], descr[k + 3], descr[k + 1].Trim() });
         }
 
         if (!(Application.platform == RuntimePlatform.WindowsPlayer))
         {
             string[] descr = Resources.Load<TextAsset>("Files/Descriptions_units").text.Split
                 (new string[] { "===" + System.Environment.NewLine, "@" }, System.StringSplitOptions.None);
-            for (int k = 0; k < descr.Length; k += 3)
-                myDescrUnits.Add(descr[k].Replace(System.Environment.NewLine, ""), new List<string>() { descr[k + 1], descr[k + 2] });
+            for (int k = 0; k < descr.Length; k += 4)
+                myDescrUnits.Add(descr[k].Replace(System.Environment.NewLine, ""), new List<string>() { descr[k + 2], descr[k + 3], descr[k + 1] });
         }
         else
         {
             string[] descr = Resources.Load<TextAsset>("Files/Descriptions_units").text.Split
                 (new string[] { "===", "@" }, System.StringSplitOptions.None);
-            for (int k = 0; k < descr.Length; k += 3)
-                myDescrUnits.Add(descr[k].Trim(), new List<string>() { descr[k + 1], descr[k + 2] });
+            for (int k = 0; k < descr.Length; k += 4)
+                myDescrUnits.Add(descr[k].Trim(), new List<string>() { descr[k + 2], descr[k + 3], descr[k + 1].Trim() });
         }
     }
 

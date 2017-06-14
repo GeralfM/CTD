@@ -1,116 +1,109 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Deck : MonoBehaviour {
 
-    public List<GameObject> myDeck = new List<GameObject>();
-    public List<GameObject> myHand = new List<GameObject>();
-    public Reader myReader { get; set; }
-    public GameObject cardPrefab;
+    public GameObject selectorPrefab;
+    public Selector selection { get; set; }
 
-    public GameObject selection { get; set; }
+    public CursorHandler myCursor;
+    public Reader myReader { get; set; }
+    public List<Selector> mySelectors { get; set; }
+    public Dictionary<string, GameObject> resourcesButton = new Dictionary<string, GameObject>();
+
+    public Dictionary<string, int> myList;
+    public Dictionary<string, int> resources;
 
     // Use this for initialization
     void Awake() {
         myReader = GameObject.Find("MainHandler").GetComponent<Reader>();
+        myCursor = GameObject.Find("MainHandler").GetComponent<CursorHandler>();
+
+        foreach (string str in new List<string>() { "W" })
+            resourcesButton.Add(str, GameObject.Find(str + "_res"));
     }
 
     public void Initialize()
     {
+        myList = new Dictionary<string, int>();
+        resources = new Dictionary<string, int>() { { "W", 0 }, { "U", 0 }, { "B", 0 }, { "R", 0 }, { "G", 0 } };
+        mySelectors = new List<Selector>();
+
         SetDeck();
-        Shuffle();
-        Draw();
+        
+        AddResource(1);
     }
 
-    public void Selecting(GameObject _selection)
+    public void Selecting(Selector _selection)
     {
-        if (_selection.GetComponent<Card>().selected)
-            selection = _selection;
-        else
-            selection = null;
-        foreach (GameObject card in myHand) if (card != _selection)
-                card.GetComponent<Card>().properties["selectable"] = !_selection.GetComponent<Card>().selected;
+        selection = _selection;
+        myCursor.stateCursor = "selected";
     }
-    public void SettingProperties(string property, bool state)
-    {
-        foreach (GameObject card in myHand)
+    
+
+    public void Play(Cell cible) {
+
+        string myText, myDescr;
+        if (selection != null && selection.IsPlayable())
         {
-            card.GetComponent<Card>().properties[property] = state;
-            if (property=="selectable") card.GetComponent<Card>().selected = !state;
+            myText = selection.transform.Find("Button").GetComponentInChildren<Text>().text;
+
+            foreach (string key in selection.cost.Keys)
+                AddResource(key, -selection.cost[key]);
+
+            GameObject newZyx = Instantiate(Resources.Load<GameObject>("Enemies prefabs/Basic Building"), cible.gameObject.transform);
+            newZyx.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+            newZyx.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+            newZyx.GetComponent<RectTransform>().localScale = Vector3.one;
+            myDescr = GameObject.Find("MainHandler").GetComponent<Reader>().myDescr[myText][1];
+            newZyx.GetComponent<Zyx_Object>().Initialize(myText, myDescr, true, GameObject.Find("Background Game").GetComponent<Grid>(), cible.myCoords, new Coord());
+
+            selection.adjustRemaining(-1);
         }
     }
 
-    public void Play(Cell cible) {
-        if (selection != null) selection.GetComponent<Card>().PlayOnCible(cible);
-        myHand.Remove(selection);
-        Destroy(selection);
-
-        SettingProperties("selectable",false);
+    public void AddResource(string res, int amount)
+    {
+        resources[res] += amount;
+        resourcesButton[res].GetComponentInChildren<Text>().text = resources[res] + "";
+        foreach (Selector sel in mySelectors)
+            sel.IsPlayable();
+    }
+    public void AddResource(int amount) // to be improved
+    {
+        AddResource("W", amount);
     }
 
     public void SetDeck() {
-        CreateNewCard("Spark watchtower", 10);
-        CreateNewCard("Metal reparator", 5);
-    }
-    public void CreateNewCard(string name, int qtity)
-    {
-        for (int i = 1; i <= qtity; i++)
+        myList.Add("Spark watchtower", 10);
+        myList.Add("Metal reparator", 5);
+
+        int i = 0;
+        foreach (string key in myList.Keys)
         {
-            GameObject newCard = Instantiate(cardPrefab, gameObject.transform);
-            myDeck.Add(newCard);
-            newCard.GetComponent<Card>().myDeck = this;
-            newCard.GetComponent<Card>().myName = name;
-            newCard.GetComponent<Card>().myDescription = myReader.myDescr[newCard.GetComponent<Card>().myName];
-            newCard.GetComponent<Card>().SetVisualInfos();
+            GameObject newSelector = Instantiate(selectorPrefab, gameObject.transform);
+            newSelector.GetComponent<RectTransform>().anchorMin = new Vector2(0.05f, 0.55f - 0.075f * i);
+            newSelector.GetComponent<RectTransform>().anchorMax = new Vector2(0.45f, 0.6f - 0.075f * i);
+            newSelector.GetComponent<RectTransform>().localScale = Vector3.one;
 
-            newCard.SetActive(false);
+            newSelector.transform.GetChild(0).GetComponentInChildren<Text>().text = key;
+            newSelector.transform.GetChild(1).GetComponent<Text>().text = myList[key] + "";
+            
+            newSelector.GetComponent<Selector>().resources = resources;
+            newSelector.GetComponent<Selector>().setCost(myReader.myDescr[key][2]);
+
+            newSelector.GetComponent<Selector>().adjustRemaining(myList[key]);
+            mySelectors.Add(newSelector.GetComponent<Selector>());
+
+            i++;
         }
     }
-    public void Draw()
-    {
-        for(int i=0;i<myHand.Count; i++)
-        {
-            myHand[i].GetComponent<RectTransform>().anchorMin = new Vector2(0.1f, 0.05f + 0.25f * i);
-            myHand[i].GetComponent<RectTransform>().anchorMax = new Vector2(0.9f, 0.25f + 0.25f * i);
-        }
-        while (myHand.Count < 3 && myDeck.Count>0)
-        {
-            GameObject drewCard = myDeck[0];
-            drewCard.SetActive(true);
-            myDeck.RemoveAt(0);
-
-            drewCard.GetComponent<RectTransform>().anchorMin = new Vector2(0.1f, 0.05f + 0.25f * myHand.Count);
-            drewCard.GetComponent<RectTransform>().anchorMax = new Vector2(0.9f, 0.25f + 0.25f * myHand.Count);
-            drewCard.GetComponent<RectTransform>().localScale = Vector3.one;
-
-            myHand.Add(drewCard);
-        }
-    }
-    public void CycleCard(GameObject cardToCycle)
-    {
-        myDeck.Add(cardToCycle);
-        myHand.Remove(cardToCycle);
-        cardToCycle.SetActive(false);
-        SettingProperties("cyclable", false);
-    }
-    public void Shuffle()
-    {
-        List<GameObject> shuffled = new List<GameObject>();
-
-        while (myDeck.Count > 0) {
-            int position = Random.Range(0, myDeck.Count);
-            shuffled.Add(myDeck[position]);
-            myDeck.RemoveAt(position);
-        }
-
-        myDeck = shuffled;
-    }
+    
     public void NextTurn()
     {
-        SettingProperties("selectable",true);
-        SettingProperties("cyclable", true);
-        Draw();
+        
     }
 
     // Update is called once per frame

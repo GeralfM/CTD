@@ -52,7 +52,7 @@ public class Cell : MonoBehaviour {
     }
     public void isHovered(bool isOn)
     {
-        if (!fallen)
+        if (!fallen && GameObject.Find("MainHandler").GetComponent<CursorHandler>().stateCursor=="none")
             GameObject.Find("MainHandler").GetComponent<CursorHandler>().showMyInfos(this, isOn);
     }
 

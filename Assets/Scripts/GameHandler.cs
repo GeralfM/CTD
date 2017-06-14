@@ -21,6 +21,7 @@ public class GameHandler : MonoBehaviour {
 	void Start () {
         myGrid = GameObject.Find("Background Game").GetComponent<Grid>();
         myDeck = GameObject.Find("Background Menu").GetComponent<Deck>();
+
         Initialize();
     }
 
@@ -37,7 +38,7 @@ public class GameHandler : MonoBehaviour {
         myDeck.Initialize();
 
         waveValue = 0;
-        pause = 1;
+        pause = 0;
         waveText.text = "Wave : " + (waveValue == 0 ? 0 : (waveValue / 5 + 1)) + "\nPause : " + pause;
     }
 
@@ -59,7 +60,7 @@ public class GameHandler : MonoBehaviour {
         }
 
         GoAttackers(false);
-        yield return new WaitForSeconds(attMaxDefender * 0.85f); // Passe à 0 a partir d'un certain temps, je crois... WTF ?
+        yield return new WaitForSeconds(attMaxDefender * 0.85f);
         GoAttackers(true);
         yield return new WaitForSeconds(.5f);
         NextWave();
@@ -70,6 +71,7 @@ public class GameHandler : MonoBehaviour {
     }
     public void NextWave()
     {
+        myDeck.AddResource(1);
         if (pause >= 1)
             pause--;
         else
@@ -160,6 +162,13 @@ public class GameHandler : MonoBehaviour {
     public void ExitGame()
     {
         Application.Quit();
+    }
+
+    //============================================== DEBUGGER =====================================================
+
+    public void doDebug(string str)
+    {
+        GameObject.Find("Debug").GetComponent<Text>().text = str;
     }
 
     // Update is called once per frame
