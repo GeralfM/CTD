@@ -3,11 +3,18 @@ Outlaw Zyx
 1@<b>Type</b> : Neutral
 
 Worst. Zyx. Ever.
-@1:1:1:front:1::::
+@1:Attack%1%1:front:1:::
 ===
 Pike Zyx
 ===
 2@<b>Type</b> : Neutral
 
 Watch your back !
-@2:1:1:front:2::::
+@2:Attack%1%1:front:2:::
+===
+Cryozyx
+===
+2@<b>Type</b> : Neutral
+
+A cold relationship...
+@2:Freeze%1%2:front:1:::

@@ -2,9 +2,9 @@ Spark watchtower
 ===
 W1@<b>Type</b> : Welder
 
-Deals 1 damage at 1 random enemy target on circle range 1. 
+Shoots once at range 1. Deals 1 damage.
 <b>Support</b> : If there is 1 adjacent Welder, shoots 2 targets.
-@1:1:1:circle:1:Attack:Support%1:Nbatt%1
+@1:Attack%1%1:circle:1:Support%1:Nbatt%1:R
 ===
 Metal reparator
 ===
@@ -12,4 +12,12 @@ W1@<b>Type</b> : Welder
 
 Heals the front cell by 1. Rotate of 1/8 turn each turn.
 <b>Support</b> : If there are 2 adjacent Welders, also heals the opposite cell.
-@1:1:1:front:1:Heal:True%0%Support%2:Rotate%8%Opposite%0
+@1:Heal%1%1:front:1:True%0%Support%2:Rotate%8%Opposite%0:R
+===
+Shock Propagator D
+===
+W3@<b>Type</b> : Welder
+
+Shoots twice at two opposite digonals at range 2. Deals 1 damage. Rotate of 1/4 turn each turn.
+<b>Support</b> : Deals 1 more damage by two adjacent Welders.
+@1:Attack%1%2:front:2:True%0%True%0%SupportCum%2:Opposite%0%Rotate%4%Att%1:D

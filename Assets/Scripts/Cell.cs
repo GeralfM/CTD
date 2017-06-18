@@ -26,7 +26,7 @@ public class Cell : MonoBehaviour {
     {
         PV = Mathf.Min(PVMax, PV + val); // dépasse PVMax pour le moment;
         gameObject.GetComponent<Image>().color = new Color(1f, (float)PV / (float)PVMax, PV / PVMax, 1);
-        if (PV < 0)
+        if (PV <= 0)
             setFallen(true);
     }
     public void setFallen(bool isFallen)

@@ -8,8 +8,10 @@ public class GameHandler : MonoBehaviour {
     public Grid myGrid { get; set; }
     public Deck myDeck { get; set; }
     public Text waveText;
+    public Text overText;
 
     public int waveValue { get; set; }
+    public int waveGlobal { get; set; }
     public int pause { get; set; }
 
     public List<Zyx_Object> allObjects { get; set; }
@@ -37,9 +39,9 @@ public class GameHandler : MonoBehaviour {
         myGrid.Initialize();
         myDeck.Initialize();
 
-        waveValue = 0;
+        waveValue = 1; waveGlobal = 1;
         pause = 0;
-        waveText.text = "Wave : " + (waveValue == 0 ? 0 : (waveValue / 5 + 1)) + "\nPause : " + pause;
+        waveText.text = "Wave : " + waveGlobal + "\nPause : " + pause;
     }
 
     public void ClickNewTurn()
@@ -48,13 +50,12 @@ public class GameHandler : MonoBehaviour {
     }
     public IEnumerator DoATurn()
     {
-        foreach (Zyx_Object obj in allObjects)
-            obj.myCaracs.restart();
-        
         int attMaxDefender = 0;
         int attMaxAttacker = 0;
+
         foreach (Zyx_Object obj in allObjects)
         {
+            obj.myCaracs.restart();
             obj.PrepareAttack();
             attMaxDefender = obj.friendly ? Mathf.Max(attMaxDefender, obj.myCaracs.NB_ATT) : attMaxDefender;
         }
@@ -72,33 +73,37 @@ public class GameHandler : MonoBehaviour {
     public void NextWave()
     {
         myDeck.AddResource(1);
-        if (pause >= 1)
+
+        if (pause > 0)
             pause--;
         else
         {
-            waveValue++;
-
-            int toDistribute = waveValue, set, boost;
+            int toDistribute = (waveGlobal - 1) * 5 + waveValue, set, boost;
             List<int> repartition = new List<int>();
             while (toDistribute > 0)
             {
-                set = Random.Range(1, Mathf.Min((waveValue - 1) / 5 + 1, toDistribute));
+                set = Random.Range(1, Mathf.Min(waveGlobal, toDistribute) + 1);
                 toDistribute -= set;
                 repartition.Add(set);
 
-                boost = Mathf.Min(toDistribute, (waveValue - 1) / 5 + 1 - set);
+                boost = Mathf.Min(waveGlobal - set, toDistribute);
                 repartition.Add(boost);
                 toDistribute -= boost;
             }
-            //print(repartition.Count + "");
+
             for (int i = 0; i < repartition.Count; i += 2)
                 SpawnMinion(repartition[i], repartition[i + 1]);
 
-            //waveValue++;
-            if (waveValue % 5 == 0)
-                pause = 2;
+            if (waveValue == 5)
+            {
+                pause = 2; waveValue = 0;
+                waveGlobal++;
+            }
+
+            waveValue++;
         }
-        waveText.text = "Wave : " + (waveValue == 0 ? 0 : (waveValue / 5 + 1)) + "\nPause : " + pause;
+        
+        waveText.text = "Wave : " + waveGlobal + "\nPause : " + pause;
     }
     public void SpawnMinion(int level, int boost)
     {
@@ -112,12 +117,12 @@ public class GameHandler : MonoBehaviour {
 
         if (nbTry <= 20)
         {
-            GameObject newZyx = Instantiate(Resources.Load<GameObject>("Enemies prefabs/Basic Zyx"), myGrid.allCells[new Coord(x, y)].gameObject.transform);
+            GameObject newZyx = Instantiate(Resources.Load<GameObject>("Enemies prefabs/Basic Zyx"), GameObject.Find("Background Game").transform);
             myGrid.allCells[new Coord(x, y)].available = false;
 
             newZyx.GetComponent<RectTransform>().Rotate(new Vector3(0, 0, rotation));
-            newZyx.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
-            newZyx.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+            newZyx.GetComponent<RectTransform>().anchorMin = myGrid.allCells[new Coord(x, y)].gameObject.GetComponent<RectTransform>().anchorMin;
+            newZyx.GetComponent<RectTransform>().anchorMax = myGrid.allCells[new Coord(x, y)].gameObject.GetComponent<RectTransform>().anchorMax;
             newZyx.GetComponent<RectTransform>().localScale = Vector3.one;
 
             string unitName = ChooseMinion(level);
@@ -132,13 +137,14 @@ public class GameHandler : MonoBehaviour {
         if (level == 1)
             return "Outlaw Zyx";
         else
-            return "Pike Zyx";
+            return Random.Range(0f, 1f) > 0.5f ? "Cryozyx" : "Pike Zyx";
 
     }
     public void BuffMinion(Zyx_Object unit, int val)
     {
         unit.myCaracs.PV += val - val / 3;
-        unit.myCaracs._ATT += val / 3;
+        foreach (string action in unit.myCaracs.actions.Keys)
+            unit.myCaracs.actions[action][0] += val / 3;
     }
 
     public void GoAttackers(bool attackersTurn)
@@ -149,6 +155,7 @@ public class GameHandler : MonoBehaviour {
         foreach (Zyx_Object obj in copyAllObjects) if (obj.friendly != attackersTurn) obj.DoEndOfTurnAction();
         int fallenAmount = 0;
         foreach (Cell aCell in myGrid.allCells.Values) if (aCell.fallen) fallenAmount++;
+        overText.text = (33 - fallenAmount) + " losses remaining";
         if (fallenAmount >= 33)
             DisplayScreen(gameOverScreen);
     }

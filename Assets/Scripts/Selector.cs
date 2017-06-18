@@ -54,9 +54,9 @@ public class Selector : MonoBehaviour {
     }
     public void DisplayInfos(bool yes)
     {
-        name = gameObject.transform.GetChild(0).GetComponentInChildren<Text>().text;
-        infosPanel.transform.Find("Text").GetComponent<Text>().text = yes ? name + "\n\n" + myReader.myDescr[name][0] : "No selection";
-        infosPanel.transform.Find("Cost").GetComponentInChildren<Text>().text = yes ? myReader.myDescr[name][2].Substring(1, myReader.myDescr[name][2].Length - 1) : "#";
+        string myName = gameObject.transform.GetChild(0).GetComponentInChildren<Text>().text;
+        infosPanel.transform.Find("Text").GetComponent<Text>().text = yes ? myName + "\n\n" + myReader.myDescr[myName][0] : "No selection";
+        infosPanel.transform.Find("Cost").GetComponentInChildren<Text>().text = yes ? myReader.myDescr[myName][2].Substring(1, myReader.myDescr[myName][2].Length - 1) : "#";
     }
 
 	// Update is called once per frame

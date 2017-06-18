@@ -29,11 +29,15 @@ public class Deck : MonoBehaviour {
     {
         myList = new Dictionary<string, int>();
         resources = new Dictionary<string, int>() { { "W", 0 }, { "U", 0 }, { "B", 0 }, { "R", 0 }, { "G", 0 } };
+
+        foreach (Transform child in GameObject.Find("Background Menu").transform)
+            if (child.gameObject.name == "ObjectSelector(Clone)")
+                Destroy(child.gameObject);
         mySelectors = new List<Selector>();
 
         SetDeck();
         
-        AddResource(1);
+        AddResource(1);//Initial value 1
     }
 
     public void Selecting(Selector _selection)
@@ -77,8 +81,9 @@ public class Deck : MonoBehaviour {
     }
 
     public void SetDeck() {
-        myList.Add("Spark watchtower", 10);
-        myList.Add("Metal reparator", 5);
+        myList.Add("Spark watchtower", 8);
+        myList.Add("Metal reparator", 3);
+        myList.Add("Shock Propagator D", 4);
 
         int i = 0;
         foreach (string key in myList.Keys)

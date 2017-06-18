@@ -5,8 +5,6 @@ using UnityEngine;
 public class Caracteristics {
 
     public int PV_MAX { get; set; }
-    public int _ATT { get; set; }
-    public int _NB_ATT { get; set; }
     public int _RANGE { get; set; }
 
     public int PV { get; set; }
@@ -15,8 +13,12 @@ public class Caracteristics {
     public int RANGE { get; set; }
     public string zoneAtt { get; set; }
 
-    public List<string> actions = new List<string>();
-    public List<string> tempActions = new List<string>();
+    public Dictionary<string, List<int>> actions = new Dictionary<string, List<int>>();
+    public Dictionary<string, int> actionsDelay = new Dictionary<string, int>();
+    public List<string> tempActions = new List<string>(); // opposite, etc...
+
+    public Dictionary<string, int> effectsOverTime = new Dictionary<string, int>();
+
     public List<string> conditions = new List<string>();
     public List<string> effects = new List<string>();
 
@@ -27,8 +29,11 @@ public class Caracteristics {
 
     public void restart()
     {
-        ATT = _ATT;
-        NB_ATT = _NB_ATT;
+        if (new List<string>(actions.Keys).Contains("Attack"))
+        {
+            ATT = actions["Attack"][0];
+            NB_ATT = actions["Attack"][1];
+        }
         RANGE = _RANGE;
 
         tempActions = new List<string>();
