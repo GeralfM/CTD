@@ -86,6 +86,16 @@ public class Cond_Eff_Handler : MonoBehaviour {
             case ("Att"):
                 obj.myCaracs.ATT += value;//print(value);
                 break;
+            case ("AdjAtt"):
+                foreach (Cell neighb in obj.getZone("circle", 1))
+                    if (!neighb.available && neighb.occupant.friendly)
+                        neighb.occupant.myCaracs.ATT++;
+                break;
+            case ("AdjNbAtt"):
+                foreach (Cell neighb in obj.getZone("circle", 1))
+                    if (!neighb.available && neighb.occupant.friendly)
+                        neighb.occupant.myCaracs.NB_ATT++;
+                break;
             default:
                 break;
         }

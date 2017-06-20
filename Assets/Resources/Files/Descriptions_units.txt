@@ -18,3 +18,17 @@ Cryozyx
 
 A cold relationship...
 @2:Freeze%1%2:front:1:::
+===
+Cryozyx 2
+===
+3@<b>Type</b> : Neutral
+
+He's angry now !
+@2:Attack%1%1%Freeze%1%2:front:1:::
+===
+Kamikazyx
+===
+1@<b>Type</b> : Neutral
+
+BOOM !
+@1:Kamikaze%3%0:front:1:::

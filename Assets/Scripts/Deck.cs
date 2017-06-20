@@ -37,7 +37,7 @@ public class Deck : MonoBehaviour {
 
         SetDeck();
         
-        AddResource(1);//Initial value 1
+        AddResource(10);//Initial value 10
     }
 
     public void Selecting(Selector _selection)
@@ -82,8 +82,10 @@ public class Deck : MonoBehaviour {
 
     public void SetDeck() {
         myList.Add("Spark watchtower", 8);
-        myList.Add("Metal reparator", 3);
-        myList.Add("Shock Propagator D", 4);
+        myList.Add("Metal reparator", 2);
+        myList.Add("Shock Propagator D", 2);
+        myList.Add("Shock Propagator M", 2);
+        myList.Add("Electrofury Citadel", 1);
 
         int i = 0;
         foreach (string key in myList.Keys)

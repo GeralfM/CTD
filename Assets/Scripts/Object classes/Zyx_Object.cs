@@ -58,6 +58,9 @@ public class Zyx_Object : MonoBehaviour {
                     case "Freeze":
                         Freeze();
                         break;
+                    case "Kamikaze":
+                        Kamikaze();
+                        break;
                     default:
                         break;
                 }
@@ -88,6 +91,12 @@ public class Zyx_Object : MonoBehaviour {
         foreach (Cell aCell in getZone(myCaracs.zoneAtt, myCaracs.RANGE))
             if(AddEffect(aCell.occupant,"Freeze")) aCell.occupant.gameObject.GetComponent<Image>().color = new Color(116f / 255, 234f / 255, 240f / 255);
     }
+    public void Kamikaze()
+    {
+        foreach (Cell aCell in getZone(myCaracs.zoneAtt, myCaracs.RANGE)) if (!aCell.fallen)
+                aCell.addToPV(-myCaracs.actions["Kamikaze"][0]);
+        IsDestroyed();
+    }
     
     public void ShootToTarget(GameObject _target)
     {
@@ -107,7 +116,7 @@ public class Zyx_Object : MonoBehaviour {
     public List<Cell> getZone(string typeZone, int range)
     {
         List<Cell> result = new List<Cell>();
-        switch (typeZone)
+        switch (typeZone) // check if the Sign is useful in calculus
         {
             case "circle":
                 for (int i = -range; i <= range; i++)
@@ -118,9 +127,12 @@ public class Zyx_Object : MonoBehaviour {
                 for (int i = 1; i <= Mathf.Abs(range); i++)
                     if (myGrid.allCells.ContainsKey(myCoords + (int)Mathf.Sign(range) * i * myOrientation)) result.Add(myGrid.allCells[myCoords + (int)Mathf.Sign(range) * i * myOrientation]);
                 break;
-            case "diag":
-                for (int i = 1; i <= Mathf.Abs(range); i++)
+            case "cross":
+                for (int i = -range; i <= Mathf.Abs(range); i++)
                     if (myGrid.allCells.ContainsKey(myCoords + (int)Mathf.Sign(range) * i * myOrientation)) result.Add(myGrid.allCells[myCoords + (int)Mathf.Sign(range) * i * myOrientation]);
+                for (int i = -range; i <= Mathf.Abs(range); i++)
+                    if (myGrid.allCells.ContainsKey(myCoords + (int)Mathf.Sign(range) * i * new Coord(-myOrientation.y, myOrientation.x) ))
+                        result.Add(myGrid.allCells[myCoords + (int)Mathf.Sign(range) * i * new Coord(-myOrientation.y, myOrientation.x) ]);
                 break;
             default:
                 break;
@@ -197,6 +209,8 @@ public class Zyx_Object : MonoBehaviour {
 
         if (descr[6] == "D") // initialement une diagonale ?
             myOrientation = new Coord(1, 1);
+        else if (descr[6] == "R") // c'est moche
+            myOrientation = new Coord(0, 1);
 
         myCaracs.restart();
     }
@@ -209,7 +223,7 @@ public class Zyx_Object : MonoBehaviour {
         foreach (string str in myCaracs.actions.Keys)
         {
             if (str == "Attack")
-                result += "\nNB ATT : " + myCaracs.actions[str][1] + "     DAMAGE : " + myCaracs.ATT;
+                result += "\nNB ATT : " + myCaracs.NB_ATT + "     DAMAGE : " + myCaracs.ATT;
             else
                 result += "\n" + str + " : " + myCaracs.actions[str][0] + " every " + (myCaracs.actions[str][1] == 1 ? "" : myCaracs.actions[str][1]+"") + " turn";
         }

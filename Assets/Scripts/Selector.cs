@@ -29,7 +29,15 @@ public class Selector : MonoBehaviour {
     public bool IsPlayable()
     {
         bool result = remaining > 0;
-        foreach (string key in cost.Keys)
+        if(new List<string>(cost.Keys).Contains("T"))
+        {
+            int total = 0;
+            foreach (string key in resources.Keys)
+                total += resources[key];
+            result = result && cost["T"] <= total;
+        }
+
+        foreach (string key in cost.Keys) if (key != "T")
             result = result && cost[key] <= resources[key];
         transform.GetComponentInChildren<Button>().interactable = result;
         return result;
@@ -42,8 +50,9 @@ public class Selector : MonoBehaviour {
 
     public void setCost(string data)
     {
-        for (int i = 0; i < data.Length; i += 2)
-            cost.Add(data[i]+"", System.Int32.Parse(data[i + 1]+""));
+        string[] parsed = data.Split(new string[] { "%" }, System.StringSplitOptions.None);
+        for (int i = 0; i < parsed.Length; i += 2)
+            cost.Add(parsed[i][0] + "", System.Int32.Parse(parsed[i].Substring(1, parsed[i].Length - 1)));
         IsPlayable();
     }
 	

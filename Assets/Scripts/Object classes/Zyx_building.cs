@@ -21,7 +21,7 @@ public class Zyx_building : Zyx_Object {
         {
             choice = Random.Range(0, ennemies.Count);
             ShootToTarget(ennemies[choice].gameObject);
-            yield return new WaitForSeconds(0.8f);
+            yield return new WaitForSeconds(0.8f / GameObject.Find("MainHandler").GetComponent<GameHandler>().maxShots);
             ennemies[choice].AddToPV(-myCaracs.ATT);
             att_left--;
             yield return new WaitForSeconds(0.01f);

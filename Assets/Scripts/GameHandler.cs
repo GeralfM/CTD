@@ -14,6 +14,8 @@ public class GameHandler : MonoBehaviour {
     public int waveGlobal { get; set; }
     public int pause { get; set; }
 
+    public int maxShots { get; set; }
+
     public List<Zyx_Object> allObjects { get; set; }
     public GameObject zyxPrefab;
 
@@ -50,18 +52,19 @@ public class GameHandler : MonoBehaviour {
     }
     public IEnumerator DoATurn()
     {
-        int attMaxDefender = 0;
+        maxShots = 0;
         int attMaxAttacker = 0;
 
         foreach (Zyx_Object obj in allObjects)
-        {
             obj.myCaracs.restart();
+        foreach (Zyx_Object obj in allObjects)
+        {
             obj.PrepareAttack();
-            attMaxDefender = obj.friendly ? Mathf.Max(attMaxDefender, obj.myCaracs.NB_ATT) : attMaxDefender;
+            maxShots = obj.friendly ? Mathf.Max(maxShots, obj.myCaracs.NB_ATT) : maxShots;
         }
 
         GoAttackers(false);
-        yield return new WaitForSeconds(attMaxDefender * 0.85f);
+        yield return new WaitForSeconds(0.85f);
         GoAttackers(true);
         yield return new WaitForSeconds(.5f);
         NextWave();
@@ -72,7 +75,7 @@ public class GameHandler : MonoBehaviour {
     }
     public void NextWave()
     {
-        myDeck.AddResource(1);
+        myDeck.AddResource(10);
 
         if (pause > 0)
             pause--;
@@ -135,9 +138,11 @@ public class GameHandler : MonoBehaviour {
     public string ChooseMinion(int level) // A retravailler
     {
         if (level == 1)
-            return "Outlaw Zyx";
-        else
+            return Random.Range(0f, 1f) > 0.5f ? "Outlaw Zyx" : "Kamikazyx";
+        else if (level == 2)
             return Random.Range(0f, 1f) > 0.5f ? "Cryozyx" : "Pike Zyx";
+        else
+            return "Cryozyx 2";
 
     }
     public void BuffMinion(Zyx_Object unit, int val)

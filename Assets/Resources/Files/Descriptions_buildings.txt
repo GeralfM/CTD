@@ -1,6 +1,6 @@
 Spark watchtower
 ===
-W1@<b>Type</b> : Welder
+W10@<b>Type</b> : Welder
 
 Shoots once at range 1. Deals 1 damage.
 <b>Support</b> : If there is 1 adjacent Welder, shoots 2 targets.
@@ -8,16 +8,32 @@ Shoots once at range 1. Deals 1 damage.
 ===
 Metal reparator
 ===
-W1@<b>Type</b> : Welder
+W5@<b>Type</b> : Welder
 
-Heals the front cell by 1. Rotate of 1/8 turn each turn.
+Heals the front cell by 1. Rotates of 1/8 turn each turn.
 <b>Support</b> : If there are 2 adjacent Welders, also heals the opposite cell.
 @1:Heal%1%1:front:1:True%0%Support%2:Rotate%8%Opposite%0:R
 ===
 Shock Propagator D
 ===
-W3@<b>Type</b> : Welder
+W25@<b>Type</b> : Welder
 
-Shoots twice at two opposite digonals at range 2. Deals 1 damage. Rotate of 1/4 turn each turn.
+Shoots twice at two opposite digonals at range 2. Deals 1 damage. Rotates of 1/4 turn each turn.
 <b>Support</b> : Deals 1 more damage by two adjacent Welders.
 @1:Attack%1%2:front:2:True%0%True%0%SupportCum%2:Opposite%0%Rotate%4%Att%1:D
+===
+Shock Propagator M
+===
+W40@<b>Type</b> : Welder
+
+Shoots twice at two opposite lines at range 2. Deals 2 damage. Rotates of 1/4 turn each turn.
+<b>Support</b> : Adjacent buildings deal 1 more damage.
+@1:Attack%2%2:front:2:True%0%True%0%True%2:Opposite%0%Rotate%4%AdjAtt%1:R
+===
+Electrofury Citadel
+===
+W95@<b>Type</b> : Welder
+
+Shoots 4 times at the four directions at range 3. Deals 2 damage. Rotates of 1/8 turn each turn.
+<b>Support</b> : If there are 8 adjacent Welders, all those welders shoot one more time.
+@1:Attack%2%4:cross:3:True%0%Support%8:Rotate%8%AdjNbAtt%1:R
